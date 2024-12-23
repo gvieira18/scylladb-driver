@@ -7,6 +7,9 @@
     "lint": "npx -y eslint --fix --no-error-on-unmatched-pattern .",
     "format": "npx -y prettier --write \"**/*.{js,ts,mjs,cjs,json,yml,md}\""
   },
+  "dependencies": {
+    "@lambda-group/scylladb": "0.7.1"
+  },
   "devDependencies": {
     "@eslint/compat": "1.2.4",
     "@eslint/js": "9.17.0",
