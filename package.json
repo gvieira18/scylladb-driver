@@ -2,10 +2,22 @@
   "name": "scylladb-driver",
   "version": "0.0.0",
   "license": "MIT",
-  "type": "module",
+  "source": "src/index.js",
+  "main": "dist/scylladb-driver.js",
+  "module": "dist/scylladb-driver.esm.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/scylladb-driver.esm.js",
+      "require": "./dist/scylladb-driver.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "scripts": {
     "lint": "npx -y eslint --fix --no-error-on-unmatched-pattern .",
-    "format": "npx -y prettier --write \"**/*.{js,ts,mjs,cjs,json,yml,md}\""
+    "format": "npx -y prettier --write \"**/*.{js,ts,mjs,cjs,json,yml,md}\"",
+    "prebuild": "npx -y rimraf dist",
+    "build": "npx -y microbundle --raw --format cjs,esm --target node --no-sourcemap"
   },
   "dependencies": {
     "@lambda-group/scylladb": "0.7.1"
@@ -18,6 +30,8 @@
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "globals": "15.14.0",
-    "prettier": "3.4.2"
+    "microbundle": "0.15.1",
+    "prettier": "3.4.2",
+    "rimraf": "6.0.1"
   }
 }
