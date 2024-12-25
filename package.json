@@ -2,10 +2,19 @@
   "name": "scylladb-driver",
   "version": "0.0.0",
   "license": "MIT",
+  "description": "A simple wrapper around the ScyllaDB driver for Node.js",
   "source": "src/index.js",
   "main": "dist/scylladb-driver.js",
   "module": "dist/scylladb-driver.esm.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gvieira18/scylladb-driver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gvieira18/scylladb-driver/issues"
+  },
   "exports": {
     ".": {
       "import": "./dist/scylladb-driver.esm.js",
@@ -13,6 +22,24 @@
       "types": "./dist/index.d.ts"
     }
   },
+  "keywords": [
+    "scylladb",
+    "driver",
+    "cql",
+    "napi-rs",
+    "NAPI",
+    "N-API",
+    "Rust"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public",
+    "provenance": true
+  },
+  "readme": "README.md",
   "scripts": {
     "lint": "npx -y eslint --fix --no-error-on-unmatched-pattern .",
     "format": "npx -y prettier --write \"**/*.{js,ts,mjs,cjs,json,yml,md}\"",
