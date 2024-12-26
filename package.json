@@ -4,9 +4,9 @@
   "license": "MIT",
   "description": "A simple wrapper around the ScyllaDB driver for Node.js",
   "source": "src/index.js",
-  "main": "dist/scylladb-driver.js",
-  "module": "dist/scylladb-driver.esm.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/scylladb-driver.cjs.js",
+  "module": "dist/scylladb-driver.mjs.js",
+  "types": "dist/scylladb-driver.d.ts",
   "sideEffects": false,
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/scylladb-driver.esm.js",
-      "require": "./dist/scylladb-driver.js",
-      "types": "./dist/index.d.ts"
+      "import": "./dist/scylladb-driver.mjs.js",
+      "require": "./dist/scylladb-driver.cjs.js",
+      "types": "./dist/scylladb-driver.d.ts"
     }
   },
   "keywords": [
@@ -44,7 +44,7 @@
     "lint": "npx -y eslint --fix --no-error-on-unmatched-pattern .",
     "format": "npx -y prettier --write \"**/*.{js,ts,mjs,cjs,json,yml,md}\"",
     "prebuild": "npx -y rimraf dist",
-    "build": "npx -y microbundle --raw --format cjs,esm --target node --no-sourcemap"
+    "build": ""
   },
   "dependencies": {
     "@lambda-group/scylladb": "0.7.1"
@@ -57,7 +57,6 @@
     "eslint-plugin-prettier": "5.2.1",
     "eslint-plugin-simple-import-sort": "12.1.1",
     "globals": "15.14.0",
-    "microbundle": "0.15.1",
     "prettier": "3.4.2",
     "rimraf": "6.0.1"
   }
