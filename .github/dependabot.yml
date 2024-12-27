@@ -1,0 +1,35 @@
+version: 2
+
+updates:
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+    pull-request-branch-name:
+      separator: _
+    commit-message:
+      prefix: ci
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    pull-request-branch-name:
+      separator: _
+    commit-message:
+      include: scope
+      prefix: chore
+      prefix-development: chore
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - 'version-update:semver-major'
+    groups:
+      prod:
+        dependency-type: production
+      dev:
+        dependency-type: development
