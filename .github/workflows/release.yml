@@ -1,0 +1,88 @@
+name: Release on NPM
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish_npm:
+    name: Publish on NPM
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Install Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Publish to NPM
+        id: publish
+        uses: JS-DevTools/npm-publish@19c28f1ef146469e409470805ea4279d47c3d35c # v3.1.1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          dry-run: false
+          provenance: true
+          tag: 'latest'
+
+      - name: Publish skipped
+        if: ${{ steps.publish.outputs.type == '' }}
+        run: |
+          echo "Version in package.json has not changed. Skipping."
+
+      - name: Post-publish
+        if: ${{ steps.publish.outputs.type }}
+        run: |
+          echo "Published ${{ steps.publish.outputs.type }} version: ${{ steps.publish.outputs.version }}"
+
+      - name: Set Tags for Changelog
+        if: ${{ steps.publish.outputs.type }}
+        id: tags
+        run: |
+          # Get the previous tag
+          FROM_TAG=$(git tag --sort=-creatordate | head -n 2 | tail -n 1)
+          echo "FROM_TAG=${FROM_TAG}" >> "$GITHUB_OUTPUT"
+
+          # Get the current tag
+          TO_TAG=$(git tag --sort=-creatordate | head -n 1)
+          echo "TO_TAG=${TO_TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Generate changelog
+        if: ${{ steps.publish.outputs.type }}
+        id: github_release
+        uses: mikepenz/release-changelog-builder-action@a57c1b7c90e56d9c8b26a6ed5d1eed159369e117 # v5.0.0
+        with:
+          fromTag: ${{ steps.tags.outputs.FROM_TAG }}
+          toTag: ${{ steps.tags.outputs.TO_TAG }}
+          commitMode: true
+          configuration: .github/config/changelog_builder.json
+
+      - id: create_release
+        name: Create release
+        if: ${{ steps.publish.outputs.type }}
+        uses: softprops/action-gh-release@7b4da11513bf3f43f9999e90eabced41ab8bb048 # v2.2.0
+        with:
+          draft: false
+          prerelease: false
+          tag_name: v${{ steps.publish.outputs.version }}
+          name: v${{ steps.publish.outputs.version }}
+          make_latest: true
+          body: ${{ steps.github_release.outputs.changelog }}
