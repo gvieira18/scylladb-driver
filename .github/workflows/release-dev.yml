@@ -1,0 +1,51 @@
+name: Release on NPM (dev)
+
+on:
+  push:
+    branches:
+      - 'main'
+    paths:
+      - 'src/**'
+      - '.github/workflows/release-dev.yml'
+  workflow_dispatch:
+
+jobs:
+  publish_npm:
+    name: Publish on NPM
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Install Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: 20
+          cache: 'npm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version
+        run: |
+          npm --no-git-tag-version version patch
+          npm --no-git-tag-version version $(npm pkg get version | sed 's/"//g')-dev.$(date +'%Y%m%dT%H%M%S')
+
+      - name: Publish to NPM
+        id: publish
+        uses: JS-DevTools/npm-publish@19c28f1ef146469e409470805ea4279d47c3d35c # v3.1.1
+        with:
+          token: ${{ secrets.NPM_AUTH_TOKEN }}
+          dry-run: false
+          provenance: true
+          tag: dev
+
+      - name: Log Published Version
+        run: echo "Publishing version $(npm pkg get version | sed 's/"//g')"
